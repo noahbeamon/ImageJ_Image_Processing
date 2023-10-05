@@ -1,0 +1,53 @@
+//Noah Beamon-neb8jn
+//part of this code is source code from the nih
+// "BatchProcessFolders"
+
+// This macro splits the channels of all .tif files in a folder and saves them with a new name.
+// All images with extension .tif in folder path must be multi channel images
+
+   requires("1.33s");
+           dir = getDirectory("Choose a Directory ");
+           setBatchMode(true);
+           count = 0;
+           countFiles(dir);
+           n = 0;
+           processFiles(dir);
+           //print(count+" files processed");
+
+           function countFiles(dir) {
+           list = getFileList(dir);
+           for (i=0; i<list.length; i++) {
+        if (endsWith(list[i], "/"))
+        countFiles(""+dir+list[i]);
+        else
+        count++;
+        }
+        }
+
+        function processFiles(dir) {
+        list = getFileList(dir);
+        for (i=0; i<list.length; i++) {
+        if (endsWith(list[i], "/"))
+        processFiles(""+dir+list[i]);
+        else {
+        showProgress(n++, count);
+        path = dir+list[i];
+        processFile(path);
+        }
+        }
+        }
+
+        function processFile(path) {
+        if (endsWith(path, ".tif")) {
+        open(path);
+        run("Split Channels");
+
+        for (i=0;i<nImages;i++){
+        selectImage(i+1);
+        title=getTitle;
+
+        saveAs("tiff",dir+title);
+        }
+        run("Close All");
+        }
+        }
